@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaleHaven - Read</title>
+    <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" href="styles/read.css">
+    <link rel="icon" href="images/icon.png">
+    <!-- Supabase Library for Online Database Fetching -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <!-- Navigation Bar (Same as Home & Create) -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="index.html" class="nav-brand">
+                <img src="images/icon.png" alt="Logo Icon">
+                <span class="nav-title">TaleHaven</span>
+            </a>
+        </div>
+        <div class="nav-right">
+            <a href="index.html">Home</a>
+            <a href="create.html">Create</a>
+            <a href="read.html" class="active">Read</a>
+            <a href="#">About</a>
+        </div>
+    </nav>
+
+    <!-- Read Page Body Layout -->
+    <main class="read-container">
+        
+        <!-- Left Sidebar: Search & Genres -->
+        <aside class="read-sidebar">
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="Search stories..." />
+            </div>
+
+            <div class="genre-section">
+                <h3>Genres</h3>
+                <div class="genre-list">
+                    <button class="genre-btn active">All</button>
+                    <button class="genre-btn">Fantasy</button>
+                    <button class="genre-btn">Sci-Fi</button>
+                    <button class="genre-btn">Romance</button>
+                    <button class="genre-btn">Mystery</button>
+                    <button class="genre-btn">Adventure</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Right Side: Feed / Reader View Container -->
+        <section class="stories-feed" id="main-feed-area">
+            <!-- View 1: Published Stories Grid (Default) -->
+            <div id="stories-grid-view">
+                <h2>Published Stories</h2>
+                <div class="story-grid" id="published-stories-grid">
+                    <!-- Published stories from Supabase will dynamically load here -->
+                </div>
+            </div>
+
+            <!-- View 2: Story Reader View (Hidden by default) -->
+            <div id="story-reader-view" style="display: none;">
+                <div class="reader-header">
+                    <button id="back-to-queue-btn" class="back-btn">← Back to Queue</button>
+                    <div class="reader-meta">
+                        <h2 id="reader-title">Story Title</h2>
+                        <p id="reader-author">By Author Name</p>
+                    </div>
+                </div>
+                <div id="reader-content" class="reader-content-box">
+                    <!-- Story content loaded here -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Script to load online queue from Supabase, handle reading view, search, and genre filtering -->
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const grid = document.getElementById("published-stories-grid");
+            const gridView = document.getElementById("stories-grid-view");
+            const readerView = document.getElementById("story-reader-view");
+            const backBtn = document.getElementById("back-to-queue-btn");
+            const searchInput = document.getElementById("search-input");
+            
+            const readerTitle = document.getElementById("reader-title");
+            const readerAuthor = document.getElementById("reader-author");
+            const readerContent = document.getElementById("reader-content");
+            const genreButtons = document.querySelectorAll(".genre-btn");
+
+            // Initialize Supabase connection
+            const SUPABASE_URL = 'https://tunotzrdbpnaymihnnqi.supabase.co'; // Replace with your URL from General Settings
+            const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_bQUFlg969RQWr3CIjkOwRg_0actcGIL';
+            const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+            // Fetch published stories from Supabase cloud database
+            grid.innerHTML = "<p style='color: #9ca3af;'>Loading online stories...</p>";
+            const { data: publishedStories, error } = await _supabase
+                .from('published_stories')
+                .select('*');
+
+            if (error) {
+                console.error("Error fetching online stories:", error);
+                grid.innerHTML = "<p style='color: #ef4444;'>Failed to load online stories from the cloud database.</p>";
+                return;
+            }
+
+            let currentFilterGenre = "All";
+            let searchQuery = "";
+
+            function renderStories() {
+                const storiesArray = publishedStories || [];
+
+                // Filter stories based on selected genre and search text input
+                const filtered = storiesArray.filter(story => {
+                    const matchesGenre = currentFilterGenre === "All" || (story.genres && story.genres.includes(currentFilterGenre));
+                    const matchesSearch = story.title.toLowerCase().includes(searchQuery) || story.author.toLowerCase().includes(searchQuery);
+                    return matchesGenre && matchesSearch;
+                });
+
+                if (filtered.length === 0) {
+                    grid.innerHTML = `<p style='color: #9ca3af;'>No published stories found.</p>`;
+                    return;
+                }
+
+                grid.innerHTML = "";
+                filtered.forEach(story => {
+                    const card = document.createElement("div");
+                    card.className = "story-card";
+                    
+                    const thumbnailStyle = story.poster 
+                        ? `background-image: url('${story.poster}'); background-size: cover; background-position: center;` 
+                        : '';
+
+                    card.innerHTML = `
+                        <div class="story-thumbnail" style="${thumbnailStyle}"></div>
+                        <h4 class="story-title">${story.title}</h4>
+                        <p class="story-author">By ${story.author}</p>
+                    `;
+
+                    card.addEventListener("click", () => {
+                        readerTitle.textContent = story.title;
+                        readerAuthor.textContent = `By ${story.author}`;
+                        readerContent.innerHTML = story.content || "<p>This story is empty.</p>";
+
+                        gridView.style.display = "none";
+                        readerView.style.display = "block";
+                    });
+
+                    grid.appendChild(card);
+                });
+            }
+
+            // Initial render
+            renderStories();
+
+            // Genre button click listeners for filtering
+            genreButtons.forEach(btn => {
+                btn.addEventListener("click", () => {
+                    genreButtons.forEach(b => b.classList.remove("active"));
+                    btn.classList.add("active");
+                    
+                    currentFilterGenre = btn.textContent.trim();
+                    renderStories();
+                });
+            });
+
+            // Live Search input listener
+            searchInput.addEventListener("input", (e) => {
+                searchQuery = e.target.value.toLowerCase().trim();
+                renderStories();
+            });
+
+            // Back button to return to queue grid
+            backBtn.addEventListener("click", () => {
+                readerView.style.display = "none";
+                gridView.style.display = "block";
+            });
+        });
+    </script>
+</body>
+</html>

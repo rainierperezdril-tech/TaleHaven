@@ -1,0 +1,181 @@
+@font-face{
+	font-family: "river";
+	src: url("../fonts/Riverside-PVwq2.ttf");
+}
+
+@font-face{
+	font-family: "freaky";
+	src: url("../fonts/freaky.otf");
+}
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    /* Replace 'path/to/your-background.jpg' with your actual image path */
+    background: linear-gradient(rgba(15, 12, 27, 0.85), rgba(15, 12, 27, 0.85)), url('../images/bodybg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: #e0e0e0;
+    min-height: 100vh;
+}
+
+html, body {
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Navigation Bar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 3rem;
+    background-color: #161225;
+    border-bottom: 1px solid #2b2345;
+}
+
+.nav-left .nav-icon {
+    color: #a78bfa;
+    display: flex;
+    align-items: center;
+}
+
+.nav-right {
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-right a {
+    color: #c4b5fd;
+    text-decoration: none;
+    font-weight: 500;
+	font-size: 20px; 
+    transition: color 0.2s ease;
+	font-family:"freaky";
+}
+
+.nav-right a:hover {
+    color: #ffffff;
+}
+
+/* Main Body Layout */
+.main-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5rem 3rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 4rem;
+}
+
+.content-left {
+    flex: 1;
+}
+
+.content-left h1 {
+    font-size: 3rem;
+    color: #ffffff;
+    margin-bottom: 1rem;
+    font-family: "river", sans-serif;
+    
+    /* Adjust these values to make it look clean */
+    letter-spacing: 2px; /* Adds space between each letter */
+    word-spacing: 6px;   /* Adds extra space between words */
+}
+
+.content-left p {
+    font-size: 1.1rem;
+    color: #9ca3af;
+    line-height: 1.6;
+}
+
+.content-right {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Styles for your direct image */
+.side-image {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 12px; /* Optional: adds rounded corners to the image itself if you like */
+}
+/* Image Container */
+
+
+
+
+/* brand ==================================== */
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* This creates the space between the icon and the title */
+    text-decoration: none; /* Removes any underline */
+}
+
+.nav-left img {
+    height: 42px; /* Adjust height of your icon as needed */
+    width: auto;
+    display: block;
+}
+
+.nav-left {
+    color: #ffffff;
+    font-size: 2.25rem;
+    font-weight: 600;
+    text-decoration: none; /* Ensures no underline on the title text */
+}
+
+.nav-title {
+	font-family: "river";
+	
+	letter-spacing: 2px; /* Adds space between each letter */
+    word-spacing: 6px;   /* Adds extra space between words */
+}
+
+/* Button-like Hyperlink Styling */
+/* Container for the buttons */
+.button-group {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+/* Base Button Styling */
+.cta-button {
+    display: inline-block;
+    background-color: #ffffff;
+    color: #161225;
+    padding: 0.75rem 1.75rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.cta-button:hover {
+    background-color: #f3f4f6;
+    transform: translateY(-2px);
+}
+
+/* Yellow Button Styling */
+.btn-yellow {
+    background-color: #FEEE91; /* Vibrant yellow */
+    color: #450693;            /* White text */
+}
+
+.btn-yellow:hover {
+    background-color: #ca8a04; /* Slightly darker yellow on hover */
+    color: #ffffff;
+    transform: translateY(-2px);
+}

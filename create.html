@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaleHaven - Create</title>
+    <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" href="styles/create.css">
+    <link rel="icon" href="images/icon.png">
+    <!-- Supabase Library for Online Publishing -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <!-- Navigation Bar (Same as Home) -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="index.html" class="nav-brand">
+                <img src="images/icon.png" alt="Logo Icon">
+                <span class="nav-title">TaleHaven</span>
+            </a>
+        </div>
+        <div class="nav-right">
+            <a href="index.html">Home</a>
+            <a href="create.html">Create</a>
+            <a href="read.html">Read</a>
+            <a href="#">About</a>
+        </div>
+    </nav>
+
+    <!-- Create Page Body Layout -->
+    <main class="create-container">
+        
+        <!-- Left Sidebar -->
+        <aside class="sidebar-left">
+            <button id="new-story-btn" class="create-story-btn">+ Create a Story</button>
+            
+            <div class="stories-section">
+                <h3>Your Stories</h3>
+                <ul id="stories-list">
+                    <!-- Dynamic story titles will stack here -->
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Right Side: MS Word / Google Docs Feature -->
+        <section class="editor-section">
+            <div class="editor-header">
+                <input type="text" id="story-title-input" placeholder="Untitled Story..." />
+                <div class="header-actions">
+                    <button id="delete-story-btn" class="delete-btn">Delete</button>
+                    <button id="save-story-btn" class="save-btn">Save</button>
+                    <button id="publish-modal-btn" class="publish-btn">Publish</button>
+                </div>
+            </div>
+            
+            <!-- Text Formatting Toolbar -->
+            <div class="editor-toolbar">
+                <button onclick="formatText('bold')"><b>B</b></button>
+                <button onclick="formatText('italic')"><i>I</i></button>
+                <button onclick="formatText('underline')"><u>U</u></button>
+                <button onclick="formatText('insertUnorderedList')">• List</button>
+            </div>
+
+            <!-- Writing Canvas Area -->
+            <div id="editor-textarea" contenteditable="true" placeholder="Start typing your story here..."></div>
+        </section>
+
+    </main>
+
+    <!-- Publish Modal Panel (Hidden by default) -->
+    <div id="publish-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-panel" style="max-height: 85vh; overflow-y: auto;">
+            <h2>Publish Your Story</h2>
+            
+            <!-- Poster Upload -->
+            <div class="panel-field">
+                <label>Story Poster</label>
+                <input type="file" id="poster-input" accept="image/*" />
+                <div id="poster-preview-text" class="preview-text">No image chosen</div>
+            </div>
+
+            <!-- Non-editable Title -->
+            <div class="panel-field">
+                <label>Title</label>
+                <input type="text" id="modal-title" readonly />
+            </div>
+
+            <!-- Editable Author -->
+            <div class="panel-field">
+                <label>Author</label>
+                <input type="text" id="modal-author" placeholder="Enter your name/pen name..." />
+            </div>
+
+            <!-- Select Genres -->
+            <div class="panel-field">
+                <label>Select Genres (Choose at least one):</label>
+                <div class="genre-checkbox-group" style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
+                    <label style="color: #fff; cursor: pointer; display: flex; align-items: center; gap: 6px;"><input type="checkbox" name="genre" value="Fantasy"> Fantasy</label>
+                    <label style="color: #fff; cursor: pointer; display: flex; align-items: center; gap: 6px;"><input type="checkbox" name="genre" value="Sci-Fi"> Sci-Fi</label>
+                    <label style="color: #fff; cursor: pointer; display: flex; align-items: center; gap: 6px;"><input type="checkbox" name="genre" value="Romance"> Romance</label>
+                    <label style="color: #fff; cursor: pointer; display: flex; align-items: center; gap: 6px;"><input type="checkbox" name="genre" value="Mystery"> Mystery</label>
+                    <label style="color: #fff; cursor: pointer; display: flex; align-items: center; gap: 6px;"><input type="checkbox" name="genre" value="Adventure"> Adventure</label>
+                </div>
+            </div>
+
+            <!-- Modal Actions -->
+            <div class="panel-actions">
+                <button id="cancel-publish-btn" class="cancel-btn">Cancel</button>
+                <button id="confirm-publish-btn" class="save-btn">Publish Now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for Supabase initialization and story logic -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Initialize Supabase connection
+            const SUPABASE_URL = 'https://tunotzrdbpnaymihnnqi.supabase.co'; // Replace with your URL from General Settings
+            const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_bQUFlg969RQWr3CIjkOwRg_0actcGIL';
+            window._supabase = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+        });
+    </script>
+    <script src="js/create.js"></script>
+</body>
+</html>
