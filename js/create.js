@@ -82,19 +82,29 @@ document.addEventListener("DOMContentLoaded", () => {
         alert("Story saved successfully!");
     });
 
-    // "Delete" Button Clicked
-    deleteStoryBtn.addEventListener("click", () => {
+    // "Delete" Button Clicked (Updated to delete from Supabase and local storage)
+    deleteStoryBtn.addEventListener("click", async () => {
         if (!currentStoryId) return;
 
         if (confirm("Are you sure you want to delete this story?")) {
-            // 1. Filter out the current story from local drafts
+            const storyToDelete = stories.find(s => s.id === currentStoryId);
+
+            // 1. If it was published online, delete it from the Supabase database
+            if (storyToDelete && storyToDelete.supabaseId) {
+                const { error } = await window._supabase
+                    .from('published_stories')
+                    .delete()
+                    .eq('id', storyToDelete.supabaseId);
+
+                if (error) {
+                    console.error("Error deleting from Supabase:", error);
+                    alert("Failed to remove from online database, but local draft will be deleted.");
+                }
+            }
+
+            // 2. Filter out the current story from local drafts
             stories = stories.filter(s => s.id !== currentStoryId);
             saveToLocalStorage();
-
-            // 2. Unpublish/Remove from published stories queue storage
-            let publishedStories = JSON.parse(localStorage.getItem("talehaven_published_stories")) || [];
-            publishedStories = publishedStories.filter(s => s.id !== currentStoryId);
-            localStorage.setItem("talehaven_published_stories", JSON.stringify(publishedStories));
 
             // 3. Check if there are remaining stories
             if (stories.length > 0) {
@@ -147,39 +157,48 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Confirm Publish Button Clicked
-   confirmPublishBtn.addEventListener("click", async () => {
-    // Collect checked genres
-    const selectedGenres = Array.from(document.querySelectorAll('input[name="genre"]:checked'))
-        .map(cb => cb.value);
+    // Confirm Publish Button Clicked (Updated to capture Supabase ID)
+    confirmPublishBtn.addEventListener("click", async () => {
+        const selectedGenres = Array.from(document.querySelectorAll('input[name="genre"]:checked'))
+            .map(cb => cb.value);
 
-    if (selectedGenres.length === 0) {
-        alert("Please select at least one genre.");
-        return;
-    }
+        if (selectedGenres.length === 0) {
+            alert("Please select at least one genre.");
+            return;
+        }
 
-    const newPublishedStory = {
-        title: modalTitleInput.value,
-        author: modalAuthorInput.value.trim() || "Anonymous",
-        poster: selectedPosterBase64 || "",
-        genres: selectedGenres,
-        content: editor.innerHTML
-    };
+        const newPublishedStory = {
+            title: modalTitleInput.value,
+            author: modalAuthorInput.value.trim() || "Anonymous",
+            poster: selectedPosterBase64 || "",
+            genres: selectedGenres,
+            content: editor.innerHTML
+        };
 
-    // Push to Supabase cloud database without passing a custom ID
-    const { data, error } = await window._supabase
-        .from('published_stories')
-        .insert([newPublishedStory]);
+        // Push to Supabase cloud database and request the created row back via .select()
+        const { data, error } = await window._supabase
+            .from('published_stories')
+            .insert([newPublishedStory])
+            .select();
 
-    if (error) {
-        console.error("Error publishing to Supabase:", error);
-        alert("Failed to publish online. Check console for details.");
-        return;
-    }
+        if (error) {
+            console.error("Error publishing to Supabase:", error);
+            alert("Failed to publish online. Check console for details.");
+            return;
+        }
 
-    publishModal.style.display = "none";
-    alert("Story successfully published online for everyone to read!");
-});
+        // Save the cloud database row ID locally so we can delete it later if needed
+        if (data && data.length > 0) {
+            const currentStory = stories.find(s => s.id === currentStoryId);
+            if (currentStory) {
+                currentStory.supabaseId = data[0].id;
+                saveToLocalStorage();
+            }
+        }
+
+        publishModal.style.display = "none";
+        alert("Story successfully published online for everyone to read!");
+    });
 
     function saveToLocalStorage() {
         localStorage.setItem("talehaven_stories", JSON.stringify(stories));
