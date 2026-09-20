@@ -157,7 +157,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Confirm Publish Button Clicked (Updated to capture Supabase ID)
+    // Confirm Publish Button Clicked (Updated to use upsert for updates)
     confirmPublishBtn.addEventListener("click", async () => {
         const selectedGenres = Array.from(document.querySelectorAll('input[name="genre"]:checked'))
             .map(cb => cb.value);
@@ -167,7 +167,10 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        const newPublishedStory = {
+        const currentStory = stories.find(s => s.id === currentStoryId);
+        if (!currentStory) return;
+
+        const storyPayload = {
             title: modalTitleInput.value,
             author: modalAuthorInput.value.trim() || "Anonymous",
             poster: selectedPosterBase64 || "",
@@ -175,29 +178,31 @@ document.addEventListener("DOMContentLoaded", () => {
             content: editor.innerHTML
         };
 
-        // Push to Supabase cloud database and request the created row back via .select()
+        // If this story already has a Supabase ID, include it so upsert updates the existing row
+        if (currentStory.supabaseId) {
+            storyPayload.id = currentStory.supabaseId;
+        }
+
+        // Use upsert to update if ID exists or insert if it's new
         const { data, error } = await window._supabase
             .from('published_stories')
-            .insert([newPublishedStory])
+            .upsert([storyPayload])
             .select();
 
         if (error) {
-            console.error("Error publishing to Supabase:", error);
+            console.error("Error publishing/updating to Supabase:", error);
             alert("Failed to publish online. Check console for details.");
             return;
         }
 
-        // Save the cloud database row ID locally so we can delete it later if needed
+        // Save the cloud database row ID locally (in case it was a first-time publish)
         if (data && data.length > 0) {
-            const currentStory = stories.find(s => s.id === currentStoryId);
-            if (currentStory) {
-                currentStory.supabaseId = data[0].id;
-                saveToLocalStorage();
-            }
+            currentStory.supabaseId = data[0].id;
+            saveToLocalStorage();
         }
 
         publishModal.style.display = "none";
-        alert("Story successfully published online for everyone to read!");
+        alert("Story successfully published/updated online for everyone to read!");
     });
 
     function saveToLocalStorage() {
