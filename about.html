@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaleHaven - About</title>
+    <link rel="stylesheet" href="styles/style.css">
+    <link rel="icon" href="images/icon.png">
+    <style>
+        /* Match the home page layout style without container boxes */
+        @font-face{
+            font-family: "river";
+            src: url("../fonts/Riverside-PVwq2.ttf");
+        }
+        
+        body {
+            margin: 0;
+            background-color: #0f172a; /* Fallback color */
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Override navbar brand styles to ensure no underline, white color, and inline alignment */
+        .navbar .nav-brand {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            gap: 10px;
+        }
+
+        .navbar .nav-title {
+            color: #ffffff !important;
+            text-decoration: none !important;
+        }
+
+        .about-main {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: calc(100vh - 70px);
+            padding: 0 8% 0 10%;
+            gap: 4rem;
+        }
+
+        .about-image-side {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+
+        .about-image-side img {
+            max-width: 420px;
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .about-text-side {
+            flex: 1.2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .about-text-side h1 {
+            font-size: 3.5rem;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            color: #ffffff;
+            font-family: "river";
+            letter-spacing: 2px; 
+            word-spacing: 6px;
+        }
+
+        .about-text-side p {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: #94a3b8;
+            max-width: 600px;
+        }
+
+        /* Responsive layout for smaller screens */
+        @media (max-width: 968px) {
+            .about-main {
+                flex-direction: column-reverse;
+                text-align: center;
+                padding: 4rem 2rem;
+                justify-content: center;
+            }
+            .about-text-side {
+                align-items: center;
+            }
+            .about-text-side h1 {
+                font-size: 2.5rem;
+            }
+            .about-image-side img {
+                max-width: 280px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="index.html" class="nav-brand">
+                <img src="images/icon.png" alt="Logo Icon">
+                <span class="nav-title">TaleHaven</span>
+            </a>
+        </div>
+        <div class="nav-right">
+            <a href="index.html">Home</a>
+            <a href="create.html">Create</a>
+            <a href="read.html">Read</a>
+            <a href="about.html" class="active">About</a>
+        </div>
+    </nav>
+
+    <!-- About Page Body Layout (Image Left, Text Right, No Container, No Buttons) -->
+    <main class="about-main">
+        <!-- Left Side: Image -->
+        <div class="about-image-side">
+            <img src="images/aboutpic.png" alt="TaleHaven Mascot">
+        </div>
+
+        <!-- Right Side: Header & Paragraph -->
+        <div class="about-text-side">
+            <h1>About TaleHaven</h1>
+            <p>
+                TaleHaven is your cozy digital sanctuary for crafting imaginative worlds and sharing stories with fellow creators. Whether you are looking to escape into a new adventure or publish your own creative masterpiece to the world, you've found your haven.
+            </p>
+        </div>
+    </main>
+
+</body>
+</html>
